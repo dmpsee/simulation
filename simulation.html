@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DMPsee - Simulation Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Andrea Davanzo" />
+  <style>
+    :root {
+      --bg-main: #000000;
+      --bg-panel: #111111;
+      --bg-panel-alt: #444444;
+      --bg-log: #222222;
+      --border-subtle: #666666;
+      --text-main: #e5e7eb;
+      --text-muted: #999999;
+      --accent-green: #10b981;
+      --accent-green-light: #34d399;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      margin: 0;
+      background: var(--bg-main);
+      color: var(--text-main);
+    }
+
+    a {
+      color: var(--accent-green);
+    }
+
+    header {
+      padding: 1rem 1.5rem;
+      background: #020600;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    header img {
+      height: 48px;
+    }
+
+    header h1 {
+      margin: 0;
+      /* font-size: 1.25rem; */
+      font-weight: 500;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr 1fr;
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .column {
+      background: var(--bg-panel);
+      border-radius: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .column h2 {
+      margin: 0;
+      /* font-size: 0.9rem; */
+      /* font-weight: 500; */
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.5rem;
+      /* text-transform: uppercase; */
+      letter-spacing: 0.04em;
+    }
+
+    button {
+      padding: 0.75rem;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: var(--accent-green);
+      color: #020617;
+      font-weight: 500;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .event-log {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg-log);
+      border-radius: 10px;
+      padding: 0.5rem;
+      font-size: 1rem;
+      line-height: 1.4;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .counter {
+      font-size: 2.75rem;
+      font-weight: 600;
+      text-align: center;
+      color: var(--accent-green);
+    }
+
+    .subscriber {
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 0.75rem;
+      background: var(--bg-panel-alt);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    #dmponlineLogo,
+    .subscriber img {
+      max-width: 300px;
+    }
+
+    .subscriber h3 {
+      margin: 0;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .subscriber .received {
+      font-size: 1.75rem;
+      color: var(--accent-green-light);
+      font-weight: 600;
+    }
+
+    .description {
+      background: var(--bg-panel);
+      border-radius: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      grid-column: 1 / -1;
+    }
+
+    ul {
+      margin-top: 0;
+    }
+
+    footer {
+      padding: 0.75rem 1.5rem;
+      /* font-size: 0.7rem; */
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="https://avatars.githubusercontent.com/u/229444999?s=96&v=4" alt="dmpsee chevrons">
+  <h1>DMPsee – Environmentally Responsible Event Propagation (Simulation)</h1>
+</header>
+
+<main>
+  <section class="column">
+    <h2>PUBLISHER</h2>
+    <img id="dmponlineLogo" src="./dmponline_logo.png" alt="DMPonline logo">
+    <button id="btnCreate">DMP created (dmc)</button>
+    <button id="btnUpdate">DMP updated (dmu)</button>
+    <button id="btnBurst">Simulate burst (5 DMP updates)</button>
+    <div class="event-log" id="publisherLog"></div>
+  </section>
+
+  <section class="column">
+    <h2>DMPsee</h2>
+    <div class="counter" id="coreCounter">0</div>
+    <div style="text-align:center;font-size:0.75rem;color:var(--text-muted);">events received</div>
+    <div class="event-log" id="coreLog"></div>
+  </section>
+
+  <section class="column">
+    <h2>SUBSCRIBERS</h2>
+    <div class="subscriber">
+      <img src="https://raw.githubusercontent.com/rspace-os/rspace-marketing-resources/refs/heads/main/rspace_logo_white.png" alt="RSpace logo">
+      <div class="received" id="rspaceCount">0</div>
+    </div>
+
+    <div class="subscriber">
+      <img src="https://placehold.co/600x110/444444/ffffff/?text=ACME+University" alt="ACME logo">
+      <div class="received" id="acmeCount">0</div>
+    </div>
+
+    <div class="subscriber">
+      <img src="https://placehold.co/200x80/444444/ffffff/?text=Founder+A" alt="ACME logo">
+      <div class="received" id="funderCount">0</div>
+    </div>
+
+    <div class="event-log" id="subscriberLog"></div>
+  </section>
+
+</main>
+
+<footer>
+  <p>
+      This simulator demonstrates how <b>DMPsee</b> propagates events emitted by a DMP platform
+    to multiple downstream systems using a publish/subscribe model.
+    No real network requests are performed.
+    In this example:
+  </p>
+  <ul>
+    <li>RSpace and Funder A suscribed to event dmc (DMP created)</li>
+    <li>RSpace and ACME University suscribed to event dmu (DMP updated)</li>
+  </ul>
+  <p>
+    Research Space and the RSpace logo are trademarks owned by <a href="https://www.researchspace.com/">Research Space</a>
+  </p>
+  <p>
+    Demo created by <a href="https://dcc.ac.uk/"><img style="max-height:18px;" src="https://dcc.ac.uk/sites/all/themes/dcc/logo.png" alt=" Digital Curation Centre (DCC) logo"></a> for
+    the <a href="https://dcc.ac.uk/events/idcc26" target="_blank">20th International Digital Curation Conference</a> -
+    Poster: <i>Connecting The Research Data Lifecycle: Event-Driven Vertical Interoperability with DMPonline, RSpace, and DMPsee</i>
+  </p>
+</footer>
+
+<script>
+  let coreEvents = 0;
+  let rspaceEvents = 0;
+  let acmeEvents = 0;
+  let funderEvents = 0;
+
+  const publisherLog = document.getElementById('publisherLog');
+  const coreLog = document.getElementById('coreLog');
+  const subscriberLog = document.getElementById('subscriberLog');
+
+  const coreCounter = document.getElementById('coreCounter');
+  const rspaceCount = document.getElementById('rspaceCount');
+  const acmeCount = document.getElementById('acmeCount');
+  const funderCount = document.getElementById('funderCount');
+
+  function log(el, msg) {
+    const line = document.createElement('div');
+    line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    el.prepend(line);
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function publishEvent(eventCode = 'dmu') {
+    log(publisherLog, `DMPonline: evp -> (${eventCode})`);
+
+    await sleep(150);
+    coreEvents++;
+    coreCounter.textContent = coreEvents;
+    log(coreLog, `DMPsee received event ${eventCode}`);
+
+    if (eventCode == 'dmu') {
+      await sleep(150);
+      rspaceEvents++;
+      rspaceCount.textContent = rspaceEvents;
+      log(subscriberLog, `RSpace webhook received ${eventCode}`);
+
+      await sleep(100);
+      acmeEvents++;
+      acmeCount.textContent = acmeEvents;
+      log(subscriberLog, `ACME Univ webhook received ${eventCode}`);
+    }
+    if (eventCode == 'dmc') {
+      await sleep(150);
+      rspaceEvents++;
+      rspaceCount.textContent = rspaceEvents;
+      log(subscriberLog, `RSpace webhook received ${eventCode}`);
+
+      await sleep(100);
+      funderEvents++;
+      funderCount.textContent = funderEvents;
+      log(subscriberLog, `Founder A webhook received ${eventCode}`);
+    }
+  }
+
+  document.getElementById('btnUpdate').addEventListener('click', () => publishEvent('dmu'));
+  document.getElementById('btnCreate').addEventListener('click', () => publishEvent('dmc'));
+  document.getElementById('btnBurst').addEventListener('click', async () => {
+    for (let i = 0; i < 5; i++) {
+      await publishEvent('dmu');
+      await sleep(200);
+    }
+  });
+</script>
+
+</body>
+</html>
